@@ -1,0 +1,19 @@
+path: ../data/
+
+train: images/train
+val: images/val
+test: images/test
+
+# Classes
+nc: 9
+
+names:
+  0: none
+  1: minor-dent
+  2: minor-scratch
+  3: moderate-broken
+  4: moderate-dent
+  5: moderate-scratch
+  6: severe-broken
+  7: severe-dent
+  8: severe-scratch

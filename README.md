@@ -1,2 +1,31 @@
 # Interview
-Interview work
+This represents a project done to do damage detection on cars, for this task has been used the YOLOv5 and YOLOv8 models.
+The classes that have been used are the following: 1: minor-dent, 2: minor-scratch, 3: moderate-broken, 4: moderate-dent, 5: moderate-scratch, 6: severe-broken, 7: severe-dent, 8: severe-scratch
+
+Preprocessing:
+
+The first step in preprocessing the data was to visualize the annotation, to get a better understanding of them, this is done using the module visualize_data.py. Where by running this module you can see a certain number of images, with their annotations (bounding boxes). The number of images that can be seen is easily adjustable using a parameter (nr_images), and to change the directory of images that you want to see, you can change the path.
+
+After running the visualize module and getting a better understanding of the data, the next step is to transform the annotations into the standard method that the YOLO model accepts them. This is done by running the module process_data.py. The standard YOLO format is a .txt file where each row represents an annotation. The row contains the following elements, all separated by a space: class label, x-coordinate, y-coordinate, width annotation, and height annotation. To make sure that the input of the image is standardized/normalized, all the values (except for the class label) in the txt file have been normalized to be between 0 and 1. Also on top of this, the names of the images and labels must correspond, so they have been renamed using the index of the image.
+
+One extra step that could be done in this section would be to add some extra transformation to the images, for example, rotations. This would create extra images in the dataset, and more diverse, that are not that expensive to create, compared to the standard (annotating images from scratch). Because of insufficient time, this has not been done at this moment but would be a good addition for the future.
+
+Training:
+
+The training has been done using the module train.py. The following models have been trained: YOLOv5su, YOLOv5mu, YOLOv8n, YOLOv8s, YOLOv8m. The initial model was YOLOv5mu, since that was the one that was the most familiar with, and it seemed like a proper first choice, but because of not so great performance, I decided to try other models as well. Initially, I tried the m (Medium) models, which are bigger, trying to capture more patterns in the data. But because of the small number of data points, the models seem to start overfitting, because of this I decided to move forward with the s (Small) and n (Nano) models, which are smaller and should not be that prone to overfitting. Also, to combat overfitting a dropout rate has been added which was initially 0.1, but later increased to 0.3. After training all the models, it seems that YOLOv8n has performed the best, making that my model of choice. 
+
+Initially, all the models were trained for 50/60 epochs, to have a better understanding of how they performed, after this initial phase. All the models have been trained from the pre-trained models that are available online. I selected the best models (YOLOv8s, and YOLOv8n) to train them for a longer period, over 100 epochs. Unfortunately, this increased the accuracy of the model, and made it more consistent (it converged), but not as much as I would have hoped. To fix this two solutions came to mind, the first one would be to increase the quantity of data, especially increasing the quantity of annotations that are few, like moderate-broke, severe-dent, and severe-scratch. The second method would be to increase the dropout rate even further (0.45) and train for more epochs.
+
+The training plots and metrics can be found in the directory runs/detect. Each folder name represents the model that has been used for training, and the ones with an extra number represent the number of epochs that ahs been trained for. Inside each folder, there is the data that has been collected during training, like train loss, val loss, recall, precision, etc. They are in data form, in the results.csv file, or directly plotted in the results.png. There are also the weights of the trained model in the folder wights, where we have the best weights and the last weights of the model. On top of this, there are other statistics present like F1 curve and confusion metrics, and some examples of the model doing inference on the validation dataset (val_batch0_lbels and val_batch0_pred).
+
+There were also some problems during the training of the models since apparently, it seems that YOLO has some problems training on GPU if it is from Nvidia 16xx series (I have 1650). There is more information in the training pull request.
+
+Inference:
+
+To run the inference with the test data set the module inference.py has been created. The initial step of this module is to extract the  labels from the .txt file and obtain the path to the image that will be used for inference. After the inference is done, the model will take the predicted box and measure its iou with the true box. If the iou is bigger than the threshold value, the check is done to see if the prediction is the same class as the label. if this is true then a counter is increased, and the iou is saved. This counter is then used to compute the average iou of the particular label. 
+
+The inference statistics are saved in the run/inference folder. Each folder represents the inference run for a particular model. in this folder you can find, the images that have the highest iou (>0.8), and a statistics folder that contains the accuracy and average iou per class. 
+
+There are a few things that need to be addressed in this module, the first one would be the way the counter for the annotations is implemented, at the moment is implanted in the wrong place, and it doesn't count all the labels. The second problem is the method in which the accuracy is computed, by doing this, is possible for multiple boxes to appear over the same label, and that would destroy the accuracy, to prevent this some better metrics are recommended, like precision, recall, or mAP50. And lastly, the way the boxes are presented over one another right now is hard to read, especially if they are small.
+
+

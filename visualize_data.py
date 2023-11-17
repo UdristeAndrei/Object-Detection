@@ -23,4 +23,5 @@ def visualize_data(data_path, set_name="train", nr_images=5):
             cv2.destroyAllWindows()
 
 
-visualize_data(file_path)
+if __name__ == "__main__":
+    visualize_data(file_path)

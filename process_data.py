@@ -36,4 +36,5 @@ def move_data(data_path, set_name="train"):
             gen_labels(set_name, img_id, b_box, damage_type)
 
 
-move_data(file_path)
+if __name__ == "__main__":
+    move_data(file_path)

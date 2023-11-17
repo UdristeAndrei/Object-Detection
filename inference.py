@@ -7,8 +7,8 @@ img_height = img_width = 640
 
 data_path = "data/images/test/"
 labels_path = "data/labels/test/"
-model = YOLO("runs/detect/exp_v5su/weights/best.pt")
-save_path = "runs/inferance/yolov5su/"
+model = YOLO("runs/detect/exp_v8n-120/weights/best.pt")
+save_path = "runs/inferance/yolov8n/"
 
 os.makedirs(save_path, exist_ok=True)
 

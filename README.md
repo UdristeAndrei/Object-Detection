@@ -1,4 +1,4 @@
-# Interview
+# Object Detection
 This represents a project done to do damage detection on cars, for this task has been used the YOLOv5 and YOLOv8 models.
 The classes that have been used are the following: 1: minor-dent, 2: minor-scratch, 3: moderate-broken, 4: moderate-dent, 5: moderate-scratch, 6: severe-broken, 7: severe-dent, 8: severe-scratch
 

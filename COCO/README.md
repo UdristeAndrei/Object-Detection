@@ -16,10 +16,14 @@ Interpretation of results
 The results can be found in the results folder, where each model that has been trained has its folder. Inside the folders can be found a few images which have the highest IoU value (red bbox represents the IoU area, the blue one represents the labeled bbox, and the green one represents the prediction made by the model).
 Besides the images there can be found a statistics.csv file, which contains the main statistics for each class, like accuracy per class, average IoU values, the total number of labels of that class, and the number of labels that have been correctly predicted per class. Those are the global accuracies of the models:
 
-* Pre-trained model:
-* Model trained with random initial weights:
-* Model trained with pre-trained initial weights:
-* Model trained with pre-trained initial weights and dropout rate of 0.3:
+* Pre-trained model: 0.81
+* Model trained with random initial weights: 
+* Model trained with pre-trained initial weights: 0.28
+* Model trained with pre-trained initial weights and dropout rate of 0.3: 0.28
+
+Improve accuracy
+
+
 
 Improvements
 

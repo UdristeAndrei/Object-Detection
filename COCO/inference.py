@@ -4,16 +4,18 @@ import numpy as np
 import pandas as pd
 from ultralytics import YOLO
 
-model = YOLO("yolov8m.pt")
+# model = YOLO("yolov8m.pt")
+model = YOLO("runs/detect/exp_scratch/weights/best.pt")
 imgs_path = "data/images/test/"
 labls_path = "data/labels/test/"
-nr_images = 100
+nr_images = -1
+iou_save_trsh = 0.98
 
 class_total = np.zeros(80)
 total_iou = np.zeros(80)
 pred_total = np.zeros(80)
 
-save_path = "results/"
+save_path = "results/trained_scratch/"
 os.makedirs(save_path, exist_ok=True)
 
 
@@ -67,6 +69,7 @@ def compute_iou(pred_bbox, label_bbox):
 
 def compute_statistics(class_labels, pred_classes, bboxes_label, pred_bboxes, iou_trsh=0.3):
     iou_coordinates = list()
+    iou_values = list()
 
     for l_idx, bbox_label in enumerate(bboxes_label):
         for p_idx, bbox_pred in enumerate(pred_bboxes):
@@ -78,8 +81,9 @@ def compute_statistics(class_labels, pred_classes, bboxes_label, pred_bboxes, io
                 total_iou[int(class_labels[l_idx])] += iou_val
                 pred_total[int(class_labels[l_idx])] += 1
                 iou_coordinates.append(iou_coord)
+                iou_values.append(iou_val)
 
-    return iou_coordinates
+    return iou_coordinates, iou_values
 
 
 def save_statistics():
@@ -91,13 +95,15 @@ def save_statistics():
     statistics["classes"] = classes
     statistics["accuracy"] = acc
     statistics["average_iou"] = avg_iou
+    statistics["correct_prediction"] = pred_total
+    statistics["total_label"] = class_total
 
     global_acc = np.average(acc, weights=class_total / sum(class_total))
     print("The accuracy of the model is:", global_acc)
     statistics.to_csv(save_path + "statistics.csv")
 
 
-def main(show=True):
+def main(show_images=True, save_images=True):
     for img_name in os.listdir(imgs_path)[:nr_images]:
         results = model.predict(imgs_path + img_name)
         image = cv2.imread(imgs_path + img_name)
@@ -106,7 +112,7 @@ def main(show=True):
         for class_label in class_labels:
             class_total[int(class_label)] += 1
 
-        if show:
+        if show_images or save_images:
             draw_bbox(image, bboxes_label, (255, 0, 0))
 
         for result in results:
@@ -115,13 +121,16 @@ def main(show=True):
             if pred_classes.any():
                 pred_bboxes = np.round(result.boxes.xyxy.detach().cpu().numpy()).astype(int)
 
-                iou_coordinates = compute_statistics(class_labels, pred_classes, bboxes_label, pred_bboxes)
+                iou_coordinates, iou_values = compute_statistics(class_labels, pred_classes, bboxes_label, pred_bboxes)
 
-                if show:
+                if show_images or save_images:
                     draw_bbox(image, pred_bboxes, (0, 255, 0))
                     draw_bbox(image, iou_coordinates, (0, 0, 255))
 
-        if show:
+                if any(iou_val > iou_save_trsh for iou_val in iou_values):
+                    cv2.imwrite(save_path + img_name, image)
+
+        if show_images:
             cv2.imshow("test", image)
 
             cv2.waitKey(0)
@@ -131,4 +140,4 @@ def main(show=True):
 
 
 if __name__ == "__main__":
-    main(True)
+    main(False, True)

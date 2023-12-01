@@ -9,7 +9,7 @@ model = YOLO("runs/detect/exp_scratch/weights/best.pt")
 imgs_path = "data/images/test/"
 labls_path = "data/labels/test/"
 nr_images = -1
-iou_save_trsh = 0.98
+iou_save_trsh = 0.9
 
 class_total = np.zeros(80)
 total_iou = np.zeros(80)

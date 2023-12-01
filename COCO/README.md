@@ -21,6 +21,8 @@ Besides the images there can be found a statistics.csv file, which contains the 
 * Model trained with pre-trained initial weights: 0.28
 * Model trained with pre-trained initial weights and dropout rate of 0.3: 0.28
 
+It can be observed that the model with the best accuracy is the pre-trained model, the next best is the model trained with pre-trained weights, and the worst-performing model is the one trained with random initial weights. Those results are expected since the pre-trained model has been trained on the same dataset. One unexpected thing would be that there is no difference between the model trained with pre-trained weight without dropout and the one with dropout. One possible explanation could be that the dropout hasn't been applied as expected, or the saves have been corrupted, and the same data has been saved twice. 
+
  Improve accuracy
 
 Data Augmentation:
